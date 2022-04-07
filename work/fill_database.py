@@ -45,7 +45,7 @@ def clean_json():
     df_token['Rate'] = data['Rate'].apply(rate_bol)
     return df_token
 
-def connect_imdb_db():
+def connect_imdb_mongodb():
     client = MongoClient('mongo', port = 27017, username = 'root', password = 'root')
     imdb_db = client.imdb
     imdb_bully_coll = imdb_db.imdb_bully
@@ -55,11 +55,11 @@ def connect_imdb_db():
 def main():
     try:
         print("########## ########## ########## ########## ########## ##########")
-        print("- Creating Electricity DB...")
-        imdb_db, imdb_bully_coll, imdb_tokenized_coll = connect_imdb_db()
+        print("- Creating IMDB DB...")
+        imdb_db, imdb_bully_coll, imdb_tokenized_coll = connect_imdb_mongodb()
         print("- OK")
     except:
-        print("- MongoDB Electricity database connection error")
+        print("- MongoDB IMDB database connection error")
     df_clean = clean_json()
     print("DF CLEAN ==\n", df_clean)
     post_in_bully_db(df_clean, imdb_bully_coll)
