@@ -17,6 +17,8 @@ from traitement_comm_EN import main as traitement
 import pickle
 import imblearn
 import os
+from get_data import get_data
+import joblib
 
 ####################################### Modèle linéaire #######################################
 
@@ -25,8 +27,8 @@ tfidf = TfidfVectorizer()
 
 # Output: {'Rate': int, 'Comment': str}
 
-with open('Movie_dataframe.json', 'r') as df:
-  data = pd.read_json(df)
+data = get_data()
+data.drop('_id', inplace=True, axis=1)
 
 data.columns = ['Rate', 'Comment']
 
@@ -34,44 +36,8 @@ data.columns = ['Rate', 'Comment']
 
 data = data.replace(to_replace='', value=np.nan).dropna()
 
-# Traiter les notes pour qu'elles soient à 1 ou 0 respectivement pos ou neg
-
-def rate_bol(x):
-  if x >=5:
-    x = 1
-  else:
-    x = 0
-  return(x)
-
-# DataFrame avec les données
-
-df_token = pd.DataFrame(columns=['Rate', 'Comment'])
-
-df_token['Comment'] = data['Comment']
-df_token['Rate'] = data['Rate'].apply(rate_bol)
-
-# On a trop de commentaires positifs, donc on downsize notre dataset afin d'avoir une analyse plus
-# équilibrée et cohérente
-
-# On sépare les notes positives des notes négatives
-
-df_minor = df_token[df_token['Rate'] == 0] # Négatives
-df_major = df_token[df_token['Rate'] == 1] # Positives
-
-# On réduit la taille de l'échantillon majoritaire à 3446 car on a 3446 commentaires négatifs
-
-df_major_downsize = resample(df_major, replace=False, n_samples=3446, random_state=123)
-
-# On concatene l'échantillon majoritaire à effectif réduit et l'échantillon minoritaire complet
-
-df_downsized = pd.concat([df_major_downsize, df_minor])
-
-# On traite les commentaires pour réduire le bruit de nos données
-
-df_downsized['Comment'] = df_downsized['Comment'].apply(traitement)
-
-X = df_downsized['Comment']
-y = df_downsized['Rate']
+X = data['Comment']
+y = data['Rate']
 
 # tfidf sert à numeriser l'importance qu'à un mot dans un commentaire 
 # et va ainsi vectoriser nos données par ce bias
@@ -89,11 +55,24 @@ svc.fit(X_train, y_train)
 # On évalue la précision de notre algorithme (test)
 
 y_pred = svc.predict(X_test)
-print(classification_report(y_test, y_pred))
 
 # On enregistre notre modèle
 
 pickle_file_name = "my_model_opt.pkl"  
 
 with open(pickle_file_name, 'wb') as file: # Write & Binary pour ne pas changer les données lors de l'écriture
-    pickle.dump(svc, file)
+    pickle.dump(svc, file)# On charge notre modèle
+
+ex = ["i hate the movie it sucks"]
+
+with open('my_model_opt.pkl', 'rb') as file:
+  pk_model = pickle.load(file)
+
+def main(comment):
+  com = [traitement(comment)]
+  com = tfidf.transform(com)
+  res = pk_model.predict(com)
+  return(res)
+
+if __name__ == "__main__":
+    main()
