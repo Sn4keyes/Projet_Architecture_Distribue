@@ -81,7 +81,7 @@ print("Précision: \n", accuracy)
 # pipeline_model = pipelineFit.save("pipeline_model")
 
 # On le charge 
-loadedModel_LR = LogisticRegressionModel.load("/home/work/my_spark_model")
+loadedModel_LR = LogisticRegressionModel.load("/home/work/Model/my_spark_model")
 
 # ex = ["i hate the movie it sucks"]
 

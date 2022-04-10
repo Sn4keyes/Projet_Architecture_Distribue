@@ -7,7 +7,7 @@ from selenium import webdriver
 import pandas as pd
 import time
 
-NB_MOVIE = 25
+NB_MOVIE = 25 # Nombre de film a boucler
 URL = 'https://www.imdb.com/chart/top/'
 PATH_DRIVER = "C:\Program Files\Chromedriver\chromedriver.exe" # A modifier ! Mettre votre PATH
 
@@ -70,7 +70,7 @@ def main():
     driver = setup_scrapper()
     driver, dict_comment = manage_scrapper(driver, dict_comment)
     df_movies = pd.DataFrame(dict_comment, columns=['Rate', 'Comment'])
-    df_movies.to_json(r'Movie_dataframe.json')
+    df_movies.to_json(r'work\DataSet\Movie_dataframe.json')
     print(df_movies)
     print("####################")
     return driver

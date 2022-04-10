@@ -1,24 +1,26 @@
-from operator import index
-import re
-from textwrap import indent
-from xmlrpc.client import boolean
+#!/usr/bin/python
+
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.feature_extraction.text import TfidfVectorizer
+from traitement_comm_EN import main as traitement
+from sklearn.pipeline import Pipeline
 from matplotlib.pyplot import axis
+from sklearn.utils import resample
+from xmlrpc.client import boolean
+from sklearn.svm import LinearSVC
+from get_data import get_data
+from textwrap import indent
+from operator import index
+import sklearn as sk
 import pandas as pd
 import numpy as np
-import sklearn as sk
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.svm import LinearSVC
-from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
-from sklearn.pipeline import Pipeline
-import json
-from sklearn.utils import resample
-from traitement_comm_EN import main as traitement
-import pickle
 import imblearn
-import os
-from get_data import get_data
+import pickle
 import joblib
+import json
+import os
+import re
 
 ####################################### Modèle linéaire #######################################
 
@@ -55,17 +57,18 @@ svc.fit(X_train, y_train)
 # On évalue la précision de notre algorithme (test)
 
 y_pred = svc.predict(X_test)
+print(classification_report(y_test, y_pred))
 
 # On enregistre notre modèle
 
-pickle_file_name = "my_model_opt.pkl"  
+pickle_file_name = "Model\my_model_opt.pkl"  
 
 with open(pickle_file_name, 'wb') as file: # Write & Binary pour ne pas changer les données lors de l'écriture
     pickle.dump(svc, file)# On charge notre modèle
 
 ex = ["i hate the movie it sucks"]
 
-with open('my_model_opt.pkl', 'rb') as file:
+with open('Model\my_model_opt.pkl', 'rb') as file:
   pk_model = pickle.load(file)
 
 def main(comment):

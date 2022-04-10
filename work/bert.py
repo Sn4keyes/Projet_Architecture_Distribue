@@ -10,7 +10,8 @@ import os
 
 model = AutoModelForSequenceClassification.from_pretrained('nlptown/bert-base-multilingual-uncased-sentiment')
 tokenizer = AutoTokenizer.from_pretrained('nlptown/bert-base-multilingual-uncased-sentiment')
-ex = "I don't like this movie"
+EXAMPLE_BAD = "I don't like this movie"
+EXAMPLE_GOOD = "I really like this movie"
 
 def main(comment):
     com = traitement(comment)
@@ -22,4 +23,4 @@ def main(comment):
     return(res, note)
 
 if __name__ == "__main__":
-    main(ex)
+    main()

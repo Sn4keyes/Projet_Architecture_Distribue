@@ -1,14 +1,15 @@
 #!/usr/bin/python
 
-import bert
-from traitement_comm_EN import main as traitement
 from pymongo import MongoClient
 from sqlite3 import Connection
+import traitement_comm_EN
 from http import client
 import streamlit as st
 import pandas as pd
 import numpy as np
+import lineaire
 import sqlite3
+import bert
 
 MODEL1 = "Linear"
 MODEL2 = "Bert"
@@ -23,7 +24,7 @@ def get_bert_model(comment):
     return res
 
 def get_linear_model(comment):
-    res = '91 percent success rate'
+    res = lineaire.main(comment)
     return res
 
 def send_comment_to_model(comment, model):
@@ -38,7 +39,7 @@ def send_comment_to_model(comment, model):
 ########## MODELS ##########
 def third_model():
     st.subheader("Modèle 3 : WordToVec")
-    st.text("Entrer un commentaire pour ...")
+    st.text("Entrer un commentaire pour...")
     with st.form("form_word_to_vec"):
         comment_word_to_vec = st.text_area("Comment for WordToVec model", value="")
         submitted = st.form_submit_button("Submit")
@@ -48,7 +49,7 @@ def third_model():
 
 def second_model():
     st.subheader("Modèle 2 : Bert")
-    st.text("Entrer un commentaire pour ...")
+    st.text("Entrer un commentaire pour détecter si un commentaire est Positif ou Négatif.\nEtablir sa note de 1 à 5 et les probabilités de chaque note.")
     with st.form("form_bert"):
         comment_bert = st.text_area("Comment for Bert model", value="")
         submitted = st.form_submit_button("Submit")
@@ -59,13 +60,19 @@ def second_model():
 
 def first_model():
     st.subheader("Modèle 1 : Linéaire")
-    st.text("Entrer un commentaire pour ...")
+    st.text("Entrer un commentaire pour détecter si un commentaire est Positif ou Négatif.")
     with st.form("for_linear"):
         comment_linear = st.text_area("Comment for Linear model", value="")
         submitted = st.form_submit_button("Submit")
         if submitted:
-            model_res =  send_comment_to_model(comment_linear, MODEL1)
-            st.write("Result of model : ", model_res)
+            model_res = send_comment_to_model(comment_linear, MODEL1)
+            state_res = int(model_res[0])
+            st.write("Result of model : ")
+            if state_res == 1:
+                st.write("Ceci est un commentaire positif")
+            else:
+                st.write("Ceci est un commentaire négatif")
+            st.write(model_res)
 ########## ########## ##########
 
 ########## FRONT ##########
